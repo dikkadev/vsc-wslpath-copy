@@ -26,6 +26,34 @@ npx vsce package   # produces a .vsix you can install
 # or press F5 in VS Code to launch the Extension Development Host
 ```
 
+## Publish to both VS Code and Cursor
+
+If you want this extension discoverable in both editors:
+
+- Publish to the **VS Code Marketplace** (for VS Code users)
+- Publish to **OpenVSX** (for Cursor users)
+
+Cursor staff states that Cursor's in-app extension library uses OpenVSX, and that extensions must be available there to be installable/searchable in Cursor:
+
+- https://forum.cursor.com/t/extension-marketplace-changes-transition-to-openvsx/109138/1
+- https://forum.cursor.com/t/adding-extensions-to-cursor/132598/2
+
+### CI release flow in this repo
+
+On pushes to `main`, `.github/workflows/release.yml` now:
+
+1. Builds and packages a `.vsix`
+2. Publishes the package to VS Code Marketplace (if `VSCE_PAT` is set)
+3. Publishes the same package to OpenVSX (if `OVSX_PAT` is set)
+4. Creates a GitHub release and uploads the `.vsix`
+
+### Required GitHub secrets
+
+- `VSCE_PAT` for VS Code Marketplace publishing  
+  Reference: https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+- `OVSX_PAT` for OpenVSX publishing  
+  Reference: https://github.com/eclipse/openvsx/wiki/Publishing-Extensions
+
 ## How it works
 
 | Context | Example URI |

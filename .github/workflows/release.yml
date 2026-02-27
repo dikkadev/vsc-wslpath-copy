@@ -22,11 +22,35 @@ jobs:
 
       - run: npm run compile
 
-      - name: Install vsce
-        run: npm install -g @vscode/vsce
+      - name: Install publishing CLIs
+        run: npm install -g @vscode/vsce ovsx
 
       - name: Package extension
         run: vsce package --no-git-tag-version --no-update-package-json
+
+      - name: Resolve VSIX artifact path
+        id: vsix
+        run: echo "path=$(echo *.vsix)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to VS Code Marketplace
+        if: ${{ secrets.VSCE_PAT != '' }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: vsce publish --packagePath "${{ steps.vsix.outputs.path }}"
+
+      - name: Skip VS Code Marketplace publish (missing VSCE_PAT)
+        if: ${{ secrets.VSCE_PAT == '' }}
+        run: echo "VSCE_PAT is not configured; skipping VS Code Marketplace publish."
+
+      - name: Publish to OpenVSX
+        if: ${{ secrets.OVSX_PAT != '' }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: ovsx publish "${{ steps.vsix.outputs.path }}" -p "$OVSX_PAT"
+
+      - name: Skip OpenVSX publish (missing OVSX_PAT)
+        if: ${{ secrets.OVSX_PAT == '' }}
+        run: echo "OVSX_PAT is not configured; skipping OpenVSX publish."
 
       - name: Read version from package.json
         id: version
@@ -37,5 +61,5 @@ jobs:
         with:
           tag_name: v${{ steps.version.outputs.version }}
           name: v${{ steps.version.outputs.version }}
-          files: "*.vsix"
+          files: ${{ steps.vsix.outputs.path }}
           generate_release_notes: true
