@@ -1,0 +1,1 @@
+# vsc-wslpath-copy
