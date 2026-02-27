@@ -10,6 +10,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,28 +36,24 @@ jobs:
         run: echo "path=$(echo *.vsix)" >> "$GITHUB_OUTPUT"
 
       - name: Publish to VS Code Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        if: ${{ env.VSCE_PAT != '' }}
         run: vsce publish --packagePath "${{ steps.vsix.outputs.path }}"
 
       - name: Skip VS Code Marketplace publish (missing VSCE_PAT)
-        if: ${{ secrets.VSCE_PAT == '' }}
+        if: ${{ env.VSCE_PAT == '' }}
         run: echo "VSCE_PAT is not configured; skipping VS Code Marketplace publish."
 
       - name: Publish to OpenVSX
-        if: ${{ secrets.OVSX_PAT != '' }}
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        if: ${{ env.OVSX_PAT != '' }}
         run: ovsx publish "${{ steps.vsix.outputs.path }}" -p "$OVSX_PAT"
 
       - name: Skip OpenVSX publish (missing OVSX_PAT)
-        if: ${{ secrets.OVSX_PAT == '' }}
+        if: ${{ env.OVSX_PAT == '' }}
         run: echo "OVSX_PAT is not configured; skipping OpenVSX publish."
 
       - name: Read version from package.json
         id: version
-        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
