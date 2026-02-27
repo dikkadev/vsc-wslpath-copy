@@ -25,9 +25,11 @@ function buildFileUri(resource: vscode.Uri): string {
     return `file://wsl.localhost/${distro}${resource.path}`;
   }
 
-  // Non-WSL: use the standard file URI.
-  // On Windows local, resource.path looks like "/C:/Users/…"
-  return `file://${resource.path}`;
+  // Non-WSL: produce a standard file URI.
+  // resource.path already starts with "/" (e.g. "/C:/Users/…" on Windows,
+  // "/home/…" on Linux), so we need exactly "file://" + "" + path to get
+  // three slashes total: file:///…
+  return `file://${resource.authority}${resource.path}`;
 }
 
 /**
