@@ -1,0 +1,47 @@
+{
+  "name": "wslpath-copy",
+  "displayName": "Copy File URI (WSL-aware)",
+  "description": "Right-click to copy a file's URI to the clipboard. Produces file://wsl.localhost/… URIs when connected to WSL.",
+  "version": "0.1.0",
+  "publisher": "dikkadev",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "wslpathCopy.copyFileUri",
+        "title": "Copy Path as URI"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "wslpathCopy.copyFileUri",
+          "group": "6_copypath@99"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "wslpathCopy.copyFileUri",
+          "group": "1_copypath@99"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "typescript": "^5.4.0"
+  }
+}
