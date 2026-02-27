@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "publisher": "dikkadev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dikkadev/vsc-wslpath-copy"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -42,6 +46,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^3.2.0",
     "typescript": "^5.4.0"
   }
 }
