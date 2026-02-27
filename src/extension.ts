@@ -10,26 +10,36 @@ function buildFileUri(resource: vscode.Uri): string {
   // When connected to a WSL remote the URI authority looks like "wsl+Ubuntu"
   // (or "wsl+Debian", etc.). env.remoteName is "wsl".
   const authority = resource.authority; // e.g. "wsl+Ubuntu"
+  const hasWslAuthority = /^wsl\+/i.test(authority);
   const isWsl =
     vscode.env.remoteName === "wsl" ||
-    authority.startsWith("wsl+");
+    hasWslAuthority;
 
   if (isWsl) {
     // Extract distro name from the authority ("wsl+Ubuntu" → "Ubuntu").
     // Fall back to the full authority if the format is unexpected.
-    const distro = authority.startsWith("wsl+")
+    const distro = hasWslAuthority
       ? authority.slice(4)
       : authority || "Ubuntu";
 
-    // resource.path is already an absolute POSIX path, e.g. "/home/dikka/…"
-    return `file://wsl.localhost/${distro}${resource.path}`;
+    // Build a URI object (instead of string concat) so special chars in paths
+    // are encoded correctly (spaces, "#", "?", etc.).
+    const remotePath = resource.path.startsWith("/")
+      ? resource.path
+      : `/${resource.path}`;
+    return vscode.Uri.from({
+      scheme: "file",
+      authority: "wsl.localhost",
+      path: `/${distro}${remotePath}`,
+    }).toString();
   }
 
-  // Non-WSL: produce a standard file URI.
-  // resource.path already starts with "/" (e.g. "/C:/Users/…" on Windows,
-  // "/home/…" on Linux), so we need exactly "file://" + "" + path to get
-  // three slashes total: file:///…
-  return `file://${resource.authority}${resource.path}`;
+  // Non-WSL: produce a standard file URI with correct escaping.
+  return vscode.Uri.from({
+    scheme: "file",
+    authority: "",
+    path: resource.path,
+  }).toString();
 }
 
 /**
