@@ -37,7 +37,7 @@ function buildFileUri(resource: vscode.Uri): string {
   // Non-WSL: produce a standard file URI with correct escaping.
   return vscode.Uri.from({
     scheme: "file",
-    authority: "",
+    authority: resource.authority,
     path: resource.path,
   }).toString();
 }
