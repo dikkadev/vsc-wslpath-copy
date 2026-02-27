@@ -2,7 +2,7 @@
   "name": "wslpath-copy",
   "displayName": "Copy File URI (WSL-aware)",
   "description": "Right-click to copy a file's URI to the clipboard. Produces file://wsl.localhost/… URIs when connected to WSL.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "dikkadev",
   "license": "MIT",
   "repository": {
